@@ -12,14 +12,14 @@ fn is_report_safe(nums: &Vec<i32>) -> bool {
 
 pub fn process_part_one(input: &str) -> usize {
     input.lines().filter(|&line| {
-        let nums: Vec<i32> = line.split(" ").map(|n| n.parse::<i32>().unwrap()).collect();
+        let nums: Vec<i32> = line.split(" ").map(|n| n.parse().unwrap()).collect();
         is_report_safe(&nums)
     }).count()
 }
 
 pub fn process_part_two(input: &str) -> usize {
     input.lines().filter(|&line| {
-        let nums: Vec<i32> = line.split(" ").map(|n| n.parse::<i32>().unwrap()).collect();
+        let nums: Vec<i32> = line.split(" ").map(|n| n.parse().unwrap()).collect();
         if is_report_safe(&nums) {
             true
         } else {
