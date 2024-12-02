@@ -1,7 +1,8 @@
-fn is_report_safe(nums: &mut Vec<i32>) -> bool {
+fn is_report_safe(nums: &Vec<i32>) -> bool {
     if nums.is_sorted() | nums.iter().rev().is_sorted() {
-        nums.sort();
-        nums.windows(2).all(|p| {
+        let mut sorted_nums = nums.clone();
+        sorted_nums.sort();
+        sorted_nums.windows(2).all(|p| {
             p[1] - p[0] > 0 && p[1] - p[0] < 4
         })
     } else {
@@ -11,23 +12,23 @@ fn is_report_safe(nums: &mut Vec<i32>) -> bool {
 
 pub fn process_part_one(input: &str) -> usize {
     input.lines().filter(|&line| {
-        let mut nums: Vec<i32> = line.split(" ").map(|n| n.parse::<i32>().unwrap()).collect();
-        is_report_safe(&mut nums)
+        let nums: Vec<i32> = line.split(" ").map(|n| n.parse::<i32>().unwrap()).collect();
+        is_report_safe(&nums)
     }).count()
 }
 
 pub fn process_part_two(input: &str) -> usize {
     input.lines().filter(|&line| {
-        let mut nums: Vec<i32> = line.split(" ").map(|n| n.parse::<i32>().unwrap()).collect();
-        if is_report_safe(&mut nums) {
+        let nums: Vec<i32> = line.split(" ").map(|n| n.parse::<i32>().unwrap()).collect();
+        if is_report_safe(&nums) {
             true
         } else {
             // Check if leaving any out will be safe
             for i in 0..nums.len() {
-                let mut filter_nums = nums.iter().enumerate().filter_map(|(idx, v)| {
+                let filter_nums: Vec<i32> = nums.iter().enumerate().filter_map(|(idx, v)| {
                     if idx != i {Some(*v)} else {None}
                 }).collect();
-                if is_report_safe(&mut filter_nums) {
+                if is_report_safe(&filter_nums) {
                     return true;
                 }
             }
