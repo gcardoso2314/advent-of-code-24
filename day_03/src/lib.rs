@@ -2,12 +2,13 @@ use nom::{
     branch::alt,
     bytes::complete::tag,
     character::complete::{anychar, char, u32},
-    combinator::map,
+    combinator::{map, value},
     multi::{many1, many_till},
     sequence::{delimited, separated_pair},
-    IResult, Parser,
+    IResult,
 };
 
+#[derive(Clone)]
 enum Command {
     Mul(u32, u32),
     Do,
@@ -22,10 +23,12 @@ fn parse_mul(input: &str) -> IResult<&str, Command> {
 }
 
 fn parse_input(input: &str) -> IResult<&str, Vec<Command>> {
-    let parse_do = tag("do()").map(|_| Command::Do);
-    let parse_dont = tag("don't()").map(|_| Command::Dont);
-    let (input, out) = many1(many_till(anychar, alt((parse_do, parse_dont, parse_mul))))(input)?;
-    let (_, cmds): (Vec<Vec<char>>, Vec<Command>) = out.into_iter().unzip();
+    let parse_do = value(Command::Do, tag("do()"));
+    let parse_dont = value(Command::Dont, tag("don't()"));
+    let (input, cmds) = many1(map(
+        many_till(anychar, alt((parse_do, parse_dont, parse_mul))),
+        |(_, cmd)| cmd,
+    ))(input)?;
     Ok((input, cmds))
 }
 
