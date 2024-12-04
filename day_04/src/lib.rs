@@ -77,7 +77,7 @@ pub fn process_part_two(input: &str) -> usize {
             let mut found: bool = true;
             diagonals.iter().for_each(|(d1, d2)| {
                 let mut chars: Vec<char> = Vec::new();
-                // check d1
+
                 for d in vec![d1, d2] {
                     if let Some(c) = get_char(&grid, (i, j), *d) {
                         chars.push(*c)
