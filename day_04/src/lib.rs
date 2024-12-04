@@ -1,3 +1,12 @@
+fn get_char(grid: &Vec<Vec<char>>, pos: (usize, usize), dir: (i32, i32)) -> Option<&char> {
+    let row1 = pos.0 as i32 + dir.0;
+    let col1 = pos.1 as i32 + dir.1;
+    match grid.get(row1 as usize) {
+        Some(v) => v.get(col1 as usize),
+        None => None,
+    }
+}
+
 fn check_word(
     grid: &Vec<Vec<char>>,
     pos: (usize, usize),
@@ -8,19 +17,15 @@ fn check_word(
         return true;
     }
 
-    let row = pos.0 as i32 + dir.0;
-    let col = pos.1 as i32 + dir.1;
-
-    let result = match grid.get(row as usize) {
-        Some(v) => match v.get(col as usize) {
-            Some(c) => *c == "XMAS".chars().nth(letter_idx + 1).unwrap(),
-            None => false,
-        },
-        None => false,
+    let mut result: bool = false;
+    if let Some(c) = get_char(grid, pos, dir) {
+        result = *c == "XMAS".chars().nth(letter_idx + 1).unwrap()
     };
 
     // If matched whole word then continue recursing
     if result {
+        let row = pos.0 as i32 + dir.0;
+        let col = pos.1 as i32 + dir.1;
         check_word(grid, (row as usize, col as usize), dir, letter_idx + 1)
     } else {
         false
@@ -56,15 +61,6 @@ pub fn process_part_one(input: &str) -> usize {
     }
 
     num_found
-}
-
-fn get_char(grid: &Vec<Vec<char>>, pos: (usize, usize), dir: (i32, i32)) -> Option<&char> {
-    let row1 = pos.0 as i32 + dir.0;
-    let col1 = pos.1 as i32 + dir.1;
-    match grid.get(row1 as usize) {
-        Some(v) => v.get(col1 as usize),
-        None => None,
-    }
 }
 
 pub fn process_part_two(input: &str) -> usize {
