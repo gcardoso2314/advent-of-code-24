@@ -58,6 +58,15 @@ pub fn process_part_one(input: &str) -> usize {
     num_found
 }
 
+fn get_char(grid: &Vec<Vec<char>>, pos: (usize, usize), dir: (i32, i32)) -> Option<&char> {
+    let row1 = pos.0 as i32 + dir.0;
+    let col1 = pos.1 as i32 + dir.1;
+    match grid.get(row1 as usize) {
+        Some(v) => v.get(col1 as usize),
+        None => None,
+    }
+}
+
 pub fn process_part_two(input: &str) -> usize {
     let diagonals = [((-1, -1), (1, 1)), ((-1, 1), (1, -1))];
     let grid: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
@@ -73,26 +82,11 @@ pub fn process_part_two(input: &str) -> usize {
             diagonals.iter().for_each(|(d1, d2)| {
                 let mut chars: Vec<char> = Vec::new();
                 // check d1
-                let row1 = i as i32 + d1.0;
-                let col1 = j as i32 + d1.1;
-                match grid.get(row1 as usize) {
-                    Some(v) => match v.get(col1 as usize) {
-                        Some(c) => chars.push(*c),
-                        None => (),
-                    },
-                    None => (),
-                };
-
-                // check d2
-                let row2 = i as i32 + d2.0;
-                let col2 = j as i32 + d2.1;
-                match grid.get(row2 as usize) {
-                    Some(v) => match v.get(col2 as usize) {
-                        Some(c) => chars.push(*c),
-                        None => (),
-                    },
-                    None => (),
-                };
+                for d in vec![d1, d2] {
+                    if let Some(c) = get_char(&grid, (i, j), *d) {
+                        chars.push(*c)
+                    }
+                }
 
                 found &= chars.contains(&'M') && chars.contains(&'S')
             });
