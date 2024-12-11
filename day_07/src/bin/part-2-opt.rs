@@ -1,6 +1,5 @@
-use std::fs;
-
 use rayon::prelude::*;
+use std::fs;
 
 use nom::{
     bytes::complete::tag,
@@ -23,7 +22,7 @@ impl Operator {
         match self {
             Operator::Add => x + y,
             Operator::Mul => x * y,
-            Operator::Combine => x * 10u64.pow(y.ilog10() + 1) + y,
+            Operator::Combine => format!("{x}{y}").parse().unwrap(),
         }
     }
 }

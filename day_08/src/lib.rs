@@ -92,17 +92,6 @@ pub fn process_part_one(input: &str) -> usize {
         .count()
 }
 
-fn draw_grid(input: &str, antinodes: &HashSet<(i32, i32)>) {
-    let mut grid: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();
-    antinodes.iter().for_each(|(row, col)| {
-        if grid[*row as usize][*col as usize] == '.' {
-            grid[*row as usize][*col as usize] = '#'
-        }
-    });
-
-    println!("{}", grid.iter().map(|ch| ch.iter().join("")).join("\n"));
-}
-
 pub fn process_part_two(input: &str) -> usize {
     let mut antennas: HashMap<char, Vec<Antenna>> = HashMap::new();
     let lines: Vec<&str> = input.lines().collect();
