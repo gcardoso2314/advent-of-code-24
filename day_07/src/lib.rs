@@ -8,8 +8,6 @@ use nom::{
     IResult,
 };
 
-static OPERATORS: [Operator; 3] = [Operator::Add, Operator::Mul, Operator::Combine];
-
 enum Operator {
     Add,
     Mul,
@@ -53,7 +51,7 @@ fn check_valid_equation(
         return val == test_value;
     }
 
-    OPERATORS
+    available_ops
         .iter()
         .any(|op| check_valid_equation(test_value, val, idx + 1, nums, op, available_ops))
 }
