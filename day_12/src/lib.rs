@@ -16,13 +16,17 @@ impl Grid {
         self.plants.len() as i32
     }
 
+    fn get_plant(&self, pos: (i32, i32)) -> &char {
+        &self.plants[pos.0 as usize][pos.1 as usize]
+    }
+
     fn get_neighbours(&self, pos: (i32, i32)) -> (Vec<(i32, i32)>, usize) {
         let mut neighbours: Vec<(i32, i32)> = Vec::new();
-        let plant = &self.plants[pos.0 as usize][pos.1 as usize];
+        let plant = self.get_plant(pos);
         for dir in DIRECTIONS.iter() {
             let (nrow, ncol) = (pos.0 as i32 + dir.0, pos.1 as i32 + dir.1);
-            if nrow >= 0 && nrow < self.grid_h() && ncol >= 0 && ncol < self.grid_w() {
-                let nplant = &self.plants[nrow as usize][ncol as usize];
+            if (0..self.grid_h()).contains(&nrow) && (0..self.grid_w()).contains(&ncol) {
+                let nplant = self.get_plant((nrow, ncol));
                 if plant == nplant {
                     neighbours.push((nrow, ncol));
                 }
@@ -39,10 +43,10 @@ impl Grid {
                     0
                 } else if pos.0 == n1.0 {
                     let diag = (n2.0, n1.1);
-                    1 + (&self.plants[diag.0 as usize][diag.1 as usize] != plant) as usize
+                    1 + (self.get_plant(diag) != plant) as usize
                 } else {
                     let diag = (n1.0, n2.1);
-                    1 + (&self.plants[diag.0 as usize][diag.1 as usize] != plant) as usize
+                    1 + (self.get_plant(diag) != plant) as usize
                 }
             }
             3 => {
@@ -70,7 +74,7 @@ impl Grid {
 
                 [diag1, diag2]
                     .iter()
-                    .filter(|&&(x, y)| &self.plants[x as usize][y as usize] != plant)
+                    .filter(|&&(x, y)| self.get_plant((x, y)) != plant)
                     .count()
             }
             4 => {
@@ -98,9 +102,7 @@ impl Grid {
         let mut to_visit = vec![start];
 
         while let Some(pos) = to_visit.pop() {
-            if visited.contains(&pos) {
-                continue;
-            } else {
+            if !visited.contains(&pos) {
                 area += 1;
                 visited.insert(pos);
 
@@ -129,9 +131,7 @@ pub fn process_part_one(input: &str) -> usize {
 
     let mut result = 0;
     for pos in to_visit.iter() {
-        if visited.contains(pos) {
-            continue;
-        } else {
+        if !visited.contains(pos) {
             let (p, a, _) = grid.dfs(*pos, &mut visited);
             result += p * a;
         }
@@ -153,11 +153,9 @@ pub fn process_part_two(input: &str) -> usize {
 
     let mut result = 0;
     for pos in to_visit.iter() {
-        if visited.contains(pos) {
-            continue;
-        } else {
-            let (_, a, s) = grid.dfs(*pos, &mut visited);
-            result += s * a;
+        if !visited.contains(pos) {
+            let (p, a, _) = grid.dfs(*pos, &mut visited);
+            result += p * a;
         }
     }
     result
