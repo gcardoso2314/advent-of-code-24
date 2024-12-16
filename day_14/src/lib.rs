@@ -47,20 +47,25 @@ pub fn process_part_one(input: &str, grid_w: i32, grid_h: i32) -> usize {
 }
 
 pub fn process_part_two(input: &str, grid_w: i32, grid_h: i32) -> i64 {
-    for s in 0..10000 {
-        let positions: Vec<(i32, i32)> = input
-            .lines()
-            .map(|line| {
-                let (pos, velocity) = line.split_once(" ").unwrap();
-                let (pos_x, pos_y): (i32, i32) = pos[2..]
-                    .split_once(",")
-                    .map(|(x, y)| (x.parse().unwrap(), y.parse().unwrap()))
-                    .unwrap();
-                let (vel_x, vel_y): (i32, i32) = velocity[2..]
-                    .split_once(",")
-                    .map(|(x, y)| (x.parse().unwrap(), y.parse().unwrap()))
-                    .unwrap();
-
+    let robots: Vec<((i32, i32), (i32, i32))> = input
+        .lines()
+        .map(|line| {
+            let (pos, velocity) = line.split_once(" ").unwrap();
+            let pos: (i32, i32) = pos[2..]
+                .split_once(",")
+                .map(|(x, y)| (x.parse().unwrap(), y.parse().unwrap()))
+                .unwrap();
+            let vel: (i32, i32) = velocity[2..]
+                .split_once(",")
+                .map(|(x, y)| (x.parse().unwrap(), y.parse().unwrap()))
+                .unwrap();
+            (pos, vel)
+        })
+        .collect();
+    'outer: for s in 0..10000 {
+        let positions: Vec<(i32, i32)> = robots
+            .iter()
+            .map(|((pos_x, pos_y), (vel_x, vel_y))| {
                 let (final_pos_x, final_pos_y) = (
                     (pos_x + vel_x * s).rem_euclid(grid_w),
                     (pos_y + vel_y * s).rem_euclid(grid_h),
@@ -88,15 +93,13 @@ pub fn process_part_two(input: &str, grid_w: i32, grid_h: i32) -> i64 {
                         })
                     }
                 }
+                if component.len() > 100 {
+                    draw_grid(positions, grid_w, grid_h);
+                    println!("{}", s);
+                    break 'outer;
+                }
                 connected_components.push(component);
             }
-        }
-        // draw_grid(positions, grid_w, grid_h);
-        // dbg!(connected_components);
-        if connected_components.iter().any(|v| v.len() > 100) {
-            draw_grid(positions, grid_w, grid_h);
-            println!("{}", s);
-            break;
         }
     }
 
