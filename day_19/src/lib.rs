@@ -15,48 +15,7 @@ fn parse_input(input: &str) -> IResult<&str, (Vec<&str>, Vec<&str>)> {
     Ok((input, (towels, combos)))
 }
 
-fn match_patterns(combo: &str, towels: &Vec<&str>, memo: &mut HashMap<String, bool>) -> bool {
-    // Check if the result is already memoized
-    if let Some(&cached_result) = memo.get(combo) {
-        return cached_result;
-    }
-
-    let possible_towels: Vec<&str> = towels
-        .iter()
-        .filter_map(|&towel| {
-            if combo.contains(towel) {
-                Some(towel)
-            } else {
-                None
-            }
-        })
-        .collect();
-
-    if possible_towels.is_empty() {
-        memo.insert(combo.to_string(), false);
-        return false;
-    }
-
-    let result = possible_towels.iter().any(|&pat| {
-        if combo == pat {
-            true
-        } else if !combo.starts_with(pat) {
-            false
-        } else {
-            match_patterns(&combo[pat.len()..], &possible_towels, memo)
-        }
-    });
-
-    // Memoize the result
-    memo.insert(combo.to_string(), result);
-    result
-}
-
-fn match_patterns_count(
-    combo: &str,
-    towels: &Vec<&str>,
-    memo: &mut HashMap<String, usize>,
-) -> usize {
+fn match_patterns(combo: &str, towels: &Vec<&str>, memo: &mut HashMap<String, usize>) -> usize {
     // Check if the result is already memoized
     if let Some(&cached_result) = memo.get(combo) {
         return cached_result;
@@ -86,7 +45,7 @@ fn match_patterns_count(
             } else if !combo.starts_with(pat) {
                 0
             } else {
-                match_patterns_count(&combo[pat.len()..], &possible_towels, memo)
+                match_patterns(&combo[pat.len()..], &possible_towels, memo)
             }
         })
         .sum();
@@ -104,7 +63,7 @@ pub fn process_part_one(input: &str) -> usize {
 
     combos
         .iter()
-        .filter(|&combo| match_patterns(combo, &towels, &mut memo))
+        .filter(|&combo| match_patterns(combo, &towels, &mut memo) > 0)
         .count()
 }
 
@@ -116,7 +75,7 @@ pub fn process_part_two(input: &str) -> usize {
 
     combos
         .iter()
-        .map(|&combo| match_patterns_count(combo, &towels, &mut memo))
+        .map(|&combo| match_patterns(combo, &towels, &mut memo))
         .sum()
 }
 
